@@ -40,18 +40,7 @@ utatane:['UTATANE','夜のリラックスタイムに。'],
 yomogi:['YOMOGI','温かい飲み物でくつろぎたい時に。'],
 ousama:['OUSAMA','食後などのリラックスタイムに。']
 };
-const scoreMap={
-face:[['wash','salt'],['saturn','cream'],['cream','saturn'],['cream','saturn']],
-clench:[['mat','utatane'],['utatane','meguri'],['mat','bath'],['utatane','mat']],
-aging:[['cream','saturn'],['cream','saturn'],['cream','saturn'],['nmn','cream']],
-skin:[['cleanser','wash'],['cleanser','cream'],['cream','saturn'],['saturn','cream'],['cleanser','saturn']],
-body:[['enzyme','deru'],['deru','salt'],['yomogi','bath'],['salt','deru']],
-sleep:[['utatane','mat'],['mat','utatane'],['mat','utatane'],['utatane','meguri']],
-cold:[['yomogi','bath'],['deru','salt'],['bath','yomogi'],['yomogi','bath']],
-gut:[['enzyme','ousama'],['deru','enzyme'],['ousama','enzyme'],['enzyme','nmn']],
-stress:[['utatane','meguri'],['meguri','yomogi'],['punpun','meguri'],['utatane','yomogi']],
-hair:[['jupiter','saturn'],['jupiter','nmn'],['jupiter','nmn'],['jupiter','nmn']]
-};
+const scoreMap={"face":[["wash","saturn"],["saturn","salt"],["cream","saturn"],["cream","saturn"]],"clench":[["cream","utatane"],["cream","meguri"],["cream","bath"],["cream","mat"]],"aging":[["cream","saturn"],["cream","saturn"],["cream","saturn"],["nmn","cream"]],"skin":[["cleanser","wash"],["cleanser","wash"],["wash","saturn"],["saturn","cream"],["cleanser","enzyme"]],"body":[["enzyme","deru"],["deru","salt"],["yomogi","enzyme"],["salt","deru"]],"sleep":[["utatane","mat"],["mat","utatane"],["mat","utatane"],["utatane","bath"]],"cold":[["yomogi","enzyme"],["deru","salt"],["bath","salt"],["meguri","bath"]],"gut":[["enzyme","ousama"],["enzyme","deru"],["enzyme","ousama"],["enzyme","nmn"]],"stress":[["utatane","mat"],["meguri","punpun"],["utatane","meguri"],["utatane","yomogi"]],"hair":[["jupiter","salt"],["jupiter","nmn"],["jupiter","nmn"],["jupiter","nmn"]]};
 let answers=[],step=-1;const app=document.getElementById('app'),bar=document.getElementById('bar');
 function render(){bar.style.width=(step<0?0:Math.min(step+1,7)/7*100)+'%';if(step===-1){app.innerHTML='<div class="small">HOME CARE CHECK</div><h1>今日整えた状態を、おうちでも。</h1><p>施術お疲れさまでした。7つの質問から、今のあなたに合ったホームケアをご提案します。</p><p class="small">約1〜2分・すべて選択式</p><button class="primary" id="start">診断をはじめる</button>';document.getElementById('start').onclick=()=>{step=0;render()};return}
 if(step===7){showResult();return}
@@ -60,14 +49,8 @@ app.innerHTML='<div class="small">QUESTION '+(step+1)+' / 7</div><h1>'+title+'</
 const box=document.getElementById('opts');opts.forEach((o,i)=>{let b=document.createElement('button');b.textContent=o;b.onclick=()=>{answers[step]=i;step++;render()};box.appendChild(b)});document.getElementById('back').onclick=()=>{step--;render()};
 }
 function showResult(){
-const category=main[answers[0]][0],pair=scoreMap[category][answers[1]],scores={};Object.keys(products).forEach(k=>scores[k]=0);scores[pair[0]]+=12;scores[pair[1]]+=7;
-const add=(keys,n)=>keys.forEach(k=>scores[k]+=n);
-if(answers[2]===0)add(['wash','salt'],1);if(answers[2]===1)add(['saturn'],2);if(answers[2]===2)add(['utatane','bath'],1);
-[['cleanser'],['saturn','cream'],['cream'],['cleanser'],[]][answers[3]].forEach(k=>scores[k]+=2);
-[['deru','salt'],['yomogi','bath'],['enzyme','ousama'],['mat','utatane'],[]][answers[4]].forEach(k=>scores[k]+=2);
-[['enzyme'],['mat','utatane'],['meguri','utatane'],['nmn','cream'],[]][answers[5]].forEach(k=>scores[k]+=2);
-[['cleanser','wash','cream','saturn','jupiter'],['enzyme','nmn','salt'],['deru','meguri','punpun','utatane','yomogi','ousama'],['bath'],['mat'],[]][answers[6]].forEach(k=>scores[k]+=1);
-const sorted=Object.keys(scores).sort((a,b)=>scores[b]-scores[a]);const best=sorted[0],plus=sorted[1];
+const category=main[answers[0]][0],pair=scoreMap[category][answers[1]];
+const best=pair[0],plus=pair[1];
 const labels=[main[answers[0]][1],detail[category][answers[1]],...common.map((q,i)=>q[1][answers[i+2]])];
 app.innerHTML='<div class="small">YOUR HOME CARE CHECK</div><h1>'+labels[0]+' ケアタイプ</h1><div class="result"><div class="small">BEST ITEM</div><h2>'+products[best][0]+'</h2><p>'+products[best][1]+'</p></div><div class="result"><div class="small">PLUS CARE</div><h2>'+products[plus][0]+'</h2><p>'+products[plus][1]+'</p></div><p class="note">今回のポイント：'+labels[1]+'。気になる商品はスタッフにお声がけください。<br>※診断結果は一般的なホームケアのご提案であり、医学的な診断ではありません。</p><button class="primary" id="reset">もう一度診断する</button>';
 document.getElementById('reset').onclick=()=>{answers=[];step=-1;render()};
