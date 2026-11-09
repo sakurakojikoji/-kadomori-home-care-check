@@ -48,6 +48,7 @@ let title,opts;if(step===0){title='今、一番気になっているお悩みは
 app.innerHTML='<div class="small">QUESTION '+(step+1)+' / 6</div><h1>'+title+'</h1><div class="options" id="opts"></div><button id="back" style="border:0;padding:12px;margin-top:12px;color:#777">← 戻る</button>';
 const box=document.getElementById('opts');opts.forEach((o,i)=>{let b=document.createElement('button');b.textContent=o;b.onclick=()=>{answers[step]=i;step++;render()};box.appendChild(b)});document.getElementById('back').onclick=()=>{step--;render()};
 }
+const verifiedPriceFallback={cleanser:6820,wash:6820,cream:8800,saturn:6820,enzyme:18360,nmn:32400,utatane:2916};
 async function loadProductPhoto(key){
  const url=productUrls[key];if(!url)return;
  const el=document.querySelector('[data-product-photo="'+key+'"]');
@@ -71,9 +72,9 @@ async function loadProductPhoto(key){
     priceEl.textContent='税込 '+yen(low)+(high>low?'〜':'');
    }else{priceEl.textContent='価格は購入ページでご確認ください';}
   }
- }catch(e){if(priceEl)priceEl.textContent='価格は購入ページでご確認ください';}
+ }catch(e){if(priceEl)priceEl.textContent=verifiedPriceFallback[key]!=null?'税込 ¥'+verifiedPriceFallback[key].toLocaleString('ja-JP'):'価格は購入ページでご確認ください';}
 }
-function productPrice(key){return productUrls[key]?'<p class="product-price" data-product-price="'+key+'" aria-live="polite">価格を確認中…</p>':''}
+function productPrice(key){return productUrls[key]?'<p class="product-price" data-product-price="'+key+'" aria-live="polite">'+(verifiedPriceFallback[key]!=null?'税込 ¥'+verifiedPriceFallback[key].toLocaleString('ja-JP'):'価格は購入ページでご確認ください')+'</p>':''}
 function productPhoto(key){return productUrls[key]?'<a class="product-photo-link" data-product-photo="'+key+'" href="'+productUrls[key]+'" target="_blank" rel="noopener noreferrer" aria-label="'+products[key][0]+'の商品ページへ"></a>':''}
 function showResult(){
 const category=main[answers[0]][0],pair=scoreMap[category][answers[1]];
