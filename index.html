@@ -1,5 +1,5 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KADOMORI HOME CARE CHECK</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f5f2ed;color:#242321;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}.wrap{max-width:590px;margin:auto;padding:24px 18px}.brand{font-family:Georgia,serif;letter-spacing:.2em;margin-bottom:22px}.card{background:white;border-radius:24px;padding:26px 22px;box-shadow:0 8px 28px #00000009}h1{font-size:28px;line-height:1.4}p{line-height:1.8;color:#69645d}.small{font-size:12px;letter-spacing:.12em;color:#847d75}.options{display:grid;gap:10px;margin-top:22px}button{font:inherit;cursor:pointer;border:1px solid #ded9d1;border-radius:14px;background:white;padding:16px;text-align:left;color:#242321}button:active{background:#f1eee8}.primary{background:#242321;color:white;text-align:center;width:100%;margin-top:20px}.progress{height:4px;background:#e1dbd2;border-radius:8px;margin-bottom:24px}.bar{height:100%;background:#242321;border-radius:8px;transition:width .2s}.result{border-top:1px solid #ddd8d0;padding-top:18px;margin-top:22px}.result h2{font-size:22px;margin:7px 0}.product-photo{display:block;width:100%;max-width:290px;height:230px;object-fit:contain;margin:12px auto;border-radius:12px}.product-photo-link{display:block;text-decoration:none}.shoplink{display:block;background:#242321;color:white;text-decoration:none;border-radius:12px;padding:14px;text-align:center;font-size:14px;margin:14px 0 2px}.note{background:#f6f2eb;border-radius:14px;padding:14px;font-size:13px;line-height:1.7}</style></head><body><main class="wrap"><div class="brand">KADOMORI</div><div class="progress"><div class="bar" id="bar" style="width:0"></div></div><section class="card" id="app"></section></main><script>
+*{box-sizing:border-box}body{margin:0;background:#f5f2ed;color:#242321;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}.wrap{max-width:590px;margin:auto;padding:24px 18px}.brand{font-family:Georgia,serif;letter-spacing:.2em;margin-bottom:22px}.card{background:white;border-radius:24px;padding:26px 22px;box-shadow:0 8px 28px #00000009}h1{font-size:28px;line-height:1.4}p{line-height:1.8;color:#69645d}.small{font-size:12px;letter-spacing:.12em;color:#847d75}.options{display:grid;gap:10px;margin-top:22px}button{font:inherit;cursor:pointer;border:1px solid #ded9d1;border-radius:14px;background:white;padding:16px;text-align:left;color:#242321}button:active{background:#f1eee8}.primary{background:#242321;color:white;text-align:center;width:100%;margin-top:20px}.progress{height:4px;background:#e1dbd2;border-radius:8px;margin-bottom:24px}.bar{height:100%;background:#242321;border-radius:8px;transition:width .2s}.result{border-top:1px solid #ddd8d0;padding-top:18px;margin-top:22px}.result h2{font-size:22px;margin:7px 0}.product-photo{display:block;width:100%;max-width:290px;height:230px;object-fit:contain;margin:12px auto;border-radius:12px}.product-photo-link{display:block;text-decoration:none}.shoplink{display:block;background:#242321;color:white;text-decoration:none;border-radius:12px;padding:14px;text-align:center;font-size:14px;margin:14px 0 2px}.note{background:#f6f2eb;border-radius:14px;padding:14px;font-size:13px;line-height:1.7} .product-price{font-size:19px;font-weight:700;margin:12px 0;color:#303030}</style></head><body><main class="wrap"><div class="brand">KADOMORI</div><div class="progress"><div class="bar" id="bar" style="width:0"></div></div><section class="card" id="app"></section></main><script>
 const ENDPOINT=''; // Google Apps Script /exec URL after setup
 const STORE='代官山';
 const main=[['face','顔のむくみ・フェイスライン'],['clench','食いしばり・エラ張り'],['aging','たるみ・ハリ・年齢変化'],['skin','毛穴・乾燥・肌荒れ'],['body','脂肪・体型・身体のむくみ'],['sleep','疲れ・睡眠'],['cold','冷え・巡り'],['gut','腸・お腹・食生活'],['stress','ストレス・気分'],['hair','頭皮・髪']];
@@ -50,25 +50,36 @@ const box=document.getElementById('opts');opts.forEach((o,i)=>{let b=document.cr
 }
 async function loadProductPhoto(key){
  const url=productUrls[key];if(!url)return;
- const el=document.querySelector('[data-product-photo="'+key+'"]');if(!el)return;
+ const el=document.querySelector('[data-product-photo="'+key+'"]');
+ const priceEl=document.querySelector('[data-product-price="'+key+'"]');
+ if(!el&&!priceEl)return;
  try{
   const productUrl=new URL(url);
   if(productUrl.hostname!=='kadomori.shop'||!productUrl.pathname.startsWith('/products/'))return;
-  const response=await fetch(productUrl.origin+productUrl.pathname+'.js');
-  if(!response.ok)return;
+  const response=await fetch(productUrl.origin+productUrl.pathname+'.js',{cache:'no-store'});
+  if(!response.ok)throw new Error('Shop product unavailable');
   const product=await response.json();
   const image=product.featured_image||(product.images&&product.images[0]);
-  if(!image)return;
-  const img=document.createElement('img');img.className='product-photo';img.alt=products[key][0]+'の商品画像';img.loading='lazy';img.referrerPolicy='no-referrer';img.src=image.startsWith('//')?'https:'+image:image;
-  el.appendChild(img);
- }catch(e){/* keep product name and purchase link when the shop disallows image requests */}
+  if(el&&image){
+   const img=document.createElement('img');img.className='product-photo';img.alt=products[key][0]+'の商品画像';img.loading='lazy';img.referrerPolicy='no-referrer';img.src=image.startsWith('//')?'https:'+image:image;el.replaceChildren(img);
+  }
+  if(priceEl){
+   const prices=(product.variants||[]).map(v=>Number(v.price)).filter(v=>Number.isFinite(v)&&v>=0);
+   if(prices.length){
+    const low=Math.min(...prices),high=Math.max(...prices);
+    const yen=v=>'¥'+(v/100).toLocaleString('ja-JP',{maximumFractionDigits:0});
+    priceEl.textContent='税込 '+yen(low)+(high>low?'〜':'');
+   }else{priceEl.textContent='価格は購入ページでご確認ください';}
+  }
+ }catch(e){if(priceEl)priceEl.textContent='価格は購入ページでご確認ください';}
 }
+function productPrice(key){return productUrls[key]?'<p class="product-price" data-product-price="'+key+'" aria-live="polite">価格を確認中…</p>':''}
 function productPhoto(key){return productUrls[key]?'<a class="product-photo-link" data-product-photo="'+key+'" href="'+productUrls[key]+'" target="_blank" rel="noopener noreferrer" aria-label="'+products[key][0]+'の商品ページへ"></a>':''}
 function showResult(){
 const category=main[answers[0]][0],pair=scoreMap[category][answers[1]];
 const best=pair[0],plus=pair[1];
 const labels=[main[answers[0]][1],detail[category][answers[1]],...common.map((q,i)=>q[1][answers[i+2]])];
-app.innerHTML='<div class="small">YOUR HOME CARE CHECK</div><h1>'+labels[0]+' ケアタイプ</h1><div class="result"><div class="small">BEST ITEM</div><h2>'+products[best][0]+'</h2>'+productPhoto(best)+'<p>'+products[best][1]+'</p>' +(productUrls[best]?'<a class="shoplink" href="'+productUrls[best]+'" target="_blank" rel="noopener noreferrer">商品詳細・購入ページを見る ↗</a>':'<p class="small">ご購入についてはスタッフにお問い合わせください。</p>')+'</div><div class="result"><div class="small">PLUS CARE</div><h2>'+products[plus][0]+'</h2>'+productPhoto(plus)+'<p>'+products[plus][1]+'</p>' +(productUrls[plus]?'<a class="shoplink" href="'+productUrls[plus]+'" target="_blank" rel="noopener noreferrer">商品詳細・購入ページを見る ↗</a>':'<p class="small">ご購入についてはスタッフにお問い合わせください。</p>')+'</div><p class="note">今回のポイント：'+labels[1]+'。気になる商品はスタッフにお声がけください。<br>※診断結果は一般的なホームケアのご提案であり、医学的な診断ではありません。</p><button class="primary" id="reset">もう一度診断する</button>';
+app.innerHTML='<div class="small">YOUR HOME CARE CHECK</div><h1>'+labels[0]+' ケアタイプ</h1><div class="result"><div class="small">BEST ITEM</div><h2>'+products[best][0]+'</h2>'+productPhoto(best)+productPrice(best)+'<p>'+products[best][1]+'</p>' +(productUrls[best]?'<a class="shoplink" href="'+productUrls[best]+'" target="_blank" rel="noopener noreferrer">商品詳細・購入ページを見る ↗</a>':'<p class="small">ご購入についてはスタッフにお問い合わせください。</p>')+'</div><div class="result"><div class="small">PLUS CARE</div><h2>'+products[plus][0]+'</h2>'+productPhoto(plus)+productPrice(plus)+'<p>'+products[plus][1]+'</p>' +(productUrls[plus]?'<a class="shoplink" href="'+productUrls[plus]+'" target="_blank" rel="noopener noreferrer">商品詳細・購入ページを見る ↗</a>':'<p class="small">ご購入についてはスタッフにお問い合わせください。</p>')+'</div><p class="note">今回のポイント：'+labels[1]+'。気になる商品はスタッフにお声がけください。<br>※診断結果は一般的なホームケアのご提案であり、医学的な診断ではありません。</p><button class="primary" id="reset">もう一度診断する</button>';
 loadProductPhoto(best);if(plus!==best)loadProductPhoto(plus);
 document.getElementById('reset').onclick=()=>{answers=[];step=-1;render()};
 if(ENDPOINT){const payload=new URLSearchParams({diagnosisId:'KDM-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),store:STORE,q1:labels[0],q2:labels[1],q3:labels[2],q4:labels[3],q5:labels[4],q6:labels[5],q7:'',diagnosisType:labels[0]+' ケアタイプ',bestItem:products[best][0],plusCare:products[plus][0]});fetch(ENDPOINT,{method:'POST',mode:'no-cors',body:payload}).catch(()=>{})}
