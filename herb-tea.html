@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f7f5ee"><title>KADOMORI HERB TEA CHECK</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;color:#383d35;background:#f7f5ee}*{box-sizing:border-box}body{margin:0}main{max-width:540px;margin:0 auto;padding:32px 20px 70px}.brand{text-align:center;letter-spacing:.22em;font-size:12px;font-weight:650}.line{height:1px;background:#d8d9cb;margin:18px 0 30px}.eyebrow{color:#7b8c70;font-size:12px;letter-spacing:.16em;font-weight:700}h1{font-family:Georgia,"Hiragino Mincho ProN",serif;font-size:31px;font-weight:500;line-height:1.45;margin:14px 0 20px}h2{font-size:22px;margin:8px 0}p{line-height:1.9;color:#62685e}.small{font-size:13px}.progress{height:4px;background:#e5e7dc;border-radius:8px;margin-bottom:32px;overflow:hidden}.progress>div{height:100%;background:#899d7e;transition:width .2s}.option{display:block;width:100%;text-align:left;background:white;border:1px solid #e2e4d9;border-radius:14px;padding:18px 17px;margin:10px 0;font:inherit;color:inherit;cursor:pointer;line-height:1.6}.option:active{background:#e9eee5}.primary{display:block;width:100%;border:0;border-radius:13px;background:#667e64;color:white;font:inherit;font-weight:650;padding:18px;margin-top:24px;cursor:pointer}.back{border:0;background:transparent;color:#788275;padding:14px 0;font:inherit}.card{background:#fff;border:1px solid #e5e7dc;border-radius:18px;padding:23px;margin:22px 0;box-shadow:0 5px 25px #2b392609}.tag{color:#819678;letter-spacing:.17em;font-size:12px;font-weight:750}.photo{width:100%;height:220px;object-fit:contain;margin:10px 0;border-radius:12px}.photo-link{display:block;text-align:center}.price{font-size:20px;color:#333c32;font-weight:750;margin:10px 0}.shop{display:block;text-align:center;background:#6e856a;color:#fff;text-decoration:none;padding:15px;border-radius:11px;font-weight:650;margin-top:16px}.note{font-size:12px;color:#80877b}.leaf{font-size:35px;margin:16px 0}.hidden{display:none}</style></head>
+<body><main><div class="brand">KADOMORI · HERB TEA CHECK</div><div class="line"></div><div class="progress"><div id="progress"></div></div><div id="app"></div></main>
+<script>
+const teas={
+ deru:{name:'DERU',url:'https://kadomori.shop/products/kd-hbt-001-003',price:2916,desc:'食生活や毎日のすっきり習慣を意識したいときに。'},
+ meguri:{name:'MEGURI',url:'https://kadomori.shop/products/kd-hbt-001-004',price:2916,desc:'忙しい毎日の中で、ほっとひと息つきたいときに。'},
+ punpun:{name:'PUNPUN',url:'https://kadomori.shop/products/kd-hbt-001-002',price:2916,desc:'気分を切り替えて、リフレッシュしたいときに。'},
+ utatane:{name:'UTATANE',url:'https://kadomori.shop/products/kd-hbt-001-001',price:2916,desc:'夜のくつろぎ時間を心地よく過ごしたいときに。'},
+ yomogi:{name:'YOMOGI',url:'https://kadomori.shop/products/kd-hbt-001-006',price:2332,desc:'温かい一杯で、ゆったり過ごしたいときに。'},
+ ousama:{name:'OUSAMA',url:'https://kadomori.shop/products/kd-hbt-001-005',price:2916,desc:'食後のひと息や、落ち着いたティータイムに。'}
+};
+const questions=[
+ {title:'今、どんな時間を過ごしたい？',options:[['すっきり軽やかな気分で過ごしたい',{deru:3,punpun:1}],['ゆっくり気持ちを落ち着けたい',{meguri:3,utatane:2}],['気分をリフレッシュしたい',{punpun:3,meguri:1}],['身体を温めながらくつろぎたい',{yomogi:3,utatane:1}],['食後の時間を楽しみたい',{ousama:3,deru:1}]]},
+ {title:'どんなタイミングで飲みたい？',options:[['朝、1日のスタートに',{punpun:2,deru:2}],['ランチや食事のあとに',{ousama:3,deru:2}],['仕事・家事の合間に',{meguri:2,punpun:2}],['夜、寝る前のくつろぎ時間に',{utatane:3,yomogi:2}],['休日にゆっくり',{yomogi:2,ousama:2}]]},
+ {title:'最近の生活で近いものは？',options:[['食事のリズムが乱れがち',{deru:3,ousama:1}],['忙しくて休憩が少ない',{meguri:3,utatane:1}],['気持ちを切り替えたいことが多い',{punpun:3,meguri:1}],['夜もつい考え事をしてしまう',{utatane:3,meguri:1}],['冷たい飲み物を選びがち',{yomogi:3,ousama:1}]]},
+ {title:'好きなティータイムは？',options:[['朝の身支度をしながら',{punpun:2,deru:1}],['食後にのんびり',{ousama:3,deru:1}],['仕事の合間に短い休憩',{meguri:2,punpun:2}],['夜の読書や音楽と一緒に',{utatane:3,yomogi:2}],['温かい飲み物でほっとする',{yomogi:3,meguri:1}]]},
+ {title:'今のあなたに一番響く言葉は？',options:[['すっきり',{deru:4}],['めぐるような穏やかさ',{meguri:4}],['リフレッシュ',{punpun:4}],['おやすみ前のひと息',{utatane:4}],['ぬくもり',{yomogi:4}],['ご褒美の一杯',{ousama:4}]]}
+];
+let step=-1,answers=[];const app=document.getElementById('app'),progress=document.getElementById('progress');
+function render(){
+ progress.style.width=(Math.max(0,Math.min(step,questions.length))/questions.length*100)+'%';
+ if(step<0){app.innerHTML='<div class="eyebrow">FIND YOUR HERBAL TEA</div><div class="leaf">🌿</div><h1>今のあなたに、<br>ぴったりの一杯を。</h1><p>5つの質問から、気分や暮らしに寄り添うKADOMORIのハーブティーをご提案します。</p><p class="small">約1分 · 全5問 · 選択式</p><button class="primary" id="start">診断をはじめる</button>';document.getElementById('start').onclick=()=>{step=0;render()};return}
+ if(step===questions.length){result();return}
+ const q=questions[step];app.innerHTML='<div class="eyebrow">QUESTION '+(step+1)+' / '+questions.length+'</div><h1>'+q.title+'</h1><div id="options"></div><button class="back" id="back">← 戻る</button>';
+ q.options.forEach((o,i)=>{const b=document.createElement('button');b.className='option';b.textContent=o[0];b.onclick=()=>{answers[step]=i;step++;render()};document.getElementById('options').appendChild(b)});
+ document.getElementById('back').onclick=()=>{step--;render()};
+}
+function result(){
+ const scores=Object.fromEntries(Object.keys(teas).map(k=>[k,0]));
+ answers.forEach((idx,i)=>{const weights=questions[i].options[idx][1];Object.entries(weights).forEach(([k,v])=>scores[k]+=v)});
+ const ranked=Object.keys(teas).sort((a,b)=>scores[b]-scores[a]||Object.keys(teas).indexOf(a)-Object.keys(teas).indexOf(b));
+ const [best,plus]=ranked;
+ const card=(key,tag)=>{const t=teas[key];return '<div class="card"><div class="tag">'+tag+'</div><h2>'+t.name+'</h2><a class="photo-link" id="photo-'+key+'" href="'+t.url+'" target="_blank" rel="noopener noreferrer"></a><div class="price" id="price-'+key+'">税込 ¥'+t.price.toLocaleString('ja-JP')+'</div><p>'+t.desc+'</p><a class="shop" href="'+t.url+'" target="_blank" rel="noopener noreferrer">商品詳細・購入ページを見る ↗</a></div>'};
+ app.innerHTML='<div class="eyebrow">YOUR HERBAL TEA</div><h1>今のあなたにおすすめの一杯</h1><p>回答に合わせて、2種類を選びました。</p>'+card(best,'BEST ITEM · いちばんのおすすめ')+card(plus,'PLUS CARE · もうひとつのおすすめ')+'<p class="note">※気分やライフスタイルに合わせたご提案です。体調や疾病に関する医学的な診断ではありません。表示価格は参考税込価格です。ご購入時は公式ショップの表示をご確認ください。</p><button class="primary" id="reset">もう一度診断する</button>';
+ document.getElementById('reset').onclick=()=>{answers=[];step=-1;render()};
+ [best,plus].forEach(loadShopData);
+}
+async function loadShopData(key){
+ const t=teas[key];try{const u=new URL(t.url);const res=await fetch(u.origin+u.pathname+'.js',{cache:'no-store'});if(!res.ok)return;const data=await res.json();const image=data.featured_image||(data.images&&data.images[0]);if(image){const img=document.createElement('img');img.className='photo';img.alt=t.name+' 商品画像';img.loading='lazy';img.src=image.startsWith('//')?'https:'+image:image;document.getElementById('photo-'+key)?.appendChild(img)}
+ const prices=(data.variants||[]).map(v=>Number(v.price)).filter(n=>Number.isFinite(n)&&n>=0);if(prices.length){const min=Math.min(...prices),max=Math.max(...prices),fmt=n=>'¥'+(n/100).toLocaleString('ja-JP');const el=document.getElementById('price-'+key);if(el)el.textContent='税込 '+fmt(min)+(max>min?'〜':'')}
+ }catch(e){/* fallback price stays visible */}
+}
+render();
+</script></body></html>
